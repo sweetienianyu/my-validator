@@ -1,35 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>validator</title>
 </head>
+
 <body>
     <form action="" id="registorForm">
         <label for="userName">姓名</label>
-        <input type="text" name="userName" id="userName"/>
+        <input type="text" name="userName" id="userName" />
         <br>
         <label for="password">密码</label>
-        <input type="password" name="password" id="password"/>
+        <input type="password" name="password" id="password" />
         <br>
         <label for="phoneNumber">手机号码</label>
-        <input type="text" name="phoneNumber" id="phoneNumber"/>
+        <input type="text" name="phoneNumber" id="phoneNumber" />
         <br>
         <button>提交</button>
     </form>
     <script src="./src/validator.js"></script>
     <script>
         var registorForm = document.getElementById('registorForm')
-        registorForm.onsubmit = function(e) {
-            e.preventDefault();
+        var validataFunc = function () {
+            var validator = new Validator()
+            validator.add(registorForm.userName, [{
+                strategy: 'isEmpty',
+                errorMsg: '用户名不能为空'
+            }, {
+                strategy: 'minLength:6',
+                errorMsg: '用户名长度不能小于6位'
+            }])
+            
+            validator.add(registorForm.password, [{
+                strategy: 'minLength: 6',
+                errorMsg: '密码长度不能小于6位'
+            }])
+
+            validator.add(registorForm.password, [{
+                strategy: 'isMobile',
+                errorMsg: '手机号码格式不正确'
+            }])
+            var errorMsg = validator.start()
+            return errorMsg
+        }
+        registorForm.onsubmit = function (e) {
+            e.preventDefault() //阻止表单提交刷新
             var errorMsg = validataFunc()
-            if(errorMsg) {
+            if (errorMsg) {
                 alert(errorMsg)
                 return false
             }
         }
     </script>
 </body>
+
 </html>

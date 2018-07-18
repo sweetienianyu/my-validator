@@ -15,25 +15,24 @@ var strategies = {
         }
     }
 }
-var validataFunc = function() {
-    var validator = new Validator()
-    validator.add(registorForm.userName, 'isEmpty', '用户名不能为空')
-    validator.add(registorForm.password, 'minLength:6', '密码长度不能少于6位')
-    validator.add(registorForm.phoneNumber, 'isMobile', '手机号码格式不正确')
-    var errorMsg = validator.start()
-    return errorMsg
-}
+
 var Validator = function() {
     this.cache = []
 }
-Validator.prototype.add = function(dom, rule, errorMsg) {
-    var ary = rule.split(':')
-    this.cache.push(function() {
-        var strategy = ary.shift()
-        ary.unshift(dom.value)
-        ary.push(errorMsg)
-        return strategies[strategy].apply(dom, ary)
-    })
+Validator.prototype.add = function(dom, rules) {
+    var self = this
+    for(var i = 0, rule; rule = rules[i++];) {
+        (function(rule) {
+            var strategyAry = rule.strategy.split(':')
+            var errorMsg = rule.errorMsg
+            self.cache.push(function() {
+                var strategy = strategyAry.shift()
+                strategyAry.unshift(dom.value)
+                strategyAry.push(errorMsg)
+                return strategies[strategy].apply(dom, strategyAry)
+            })
+        }) (rule)
+    }
 }
 Validator.prototype.start = function() {
     for(var i = 0, validataFunc; validataFunc = this.cache[i++];) {
@@ -41,5 +40,22 @@ Validator.prototype.start = function() {
         if(msg) {
             return msg
         }
+    }
+}
+
+Function.prototype.before = function(beforefn) {
+    var _self = this
+    return function() {
+        beforefn.apply(this, arguments)
+        return _self.apply(this, arguments)
+    }
+}
+
+Function.prototype.after = function(afterfn) {
+    var _self = this
+    return function() {
+        var ret = _self.apply(this.arguments)
+        afterfn.apply(this, arguments)
+        return ret
     }
 }
