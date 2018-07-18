@@ -7,6 +7,29 @@
     <title>validator</title>
 </head>
 <body>
-    
+    <form action="" id="registorForm">
+        <label for="userName">姓名</label>
+        <input type="text" name="userName" id="userName"/>
+        <br>
+        <label for="password">密码</label>
+        <input type="password" name="password" id="password"/>
+        <br>
+        <label for="phoneNumber">手机号码</label>
+        <input type="text" name="phoneNumber" id="phoneNumber"/>
+        <br>
+        <button>提交</button>
+    </form>
+    <script src="./src/validator.js"></script>
+    <script>
+        var registorForm = document.getElementById('registorForm')
+        registorForm.onsubmit = function(e) {
+            e.preventDefault();
+            var errorMsg = validataFunc()
+            if(errorMsg) {
+                alert(errorMsg)
+                return false
+            }
+        }
+    </script>
 </body>
 </html>
